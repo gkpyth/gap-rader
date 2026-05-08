@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# PyCharm project files
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Output files (optional - remove this if you want reports committed)
+*.html
+*.pdf
