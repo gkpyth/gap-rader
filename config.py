@@ -1,8 +1,6 @@
-# Reddit Settings
-SUBREDDIT = "Notion"
+# Notion community settings
+COMMUNITY_BASE_URL = "https://community.notion.so"
 POST_LIMIT = 100
-POST_SORT = "top"
-TIME_FILTER = "month"
 
 # Notion help center
 HELPCENTER_URL = "https://www.notion.com/help"
