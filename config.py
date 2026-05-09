@@ -1,6 +1,6 @@
 # Local HTML files
 HTML_FILE_PATHS = [
-    "internal/notion",
+    "internal/notion.html",
 ]
 
 # Notion help center
