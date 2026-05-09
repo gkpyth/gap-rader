@@ -20,3 +20,6 @@ Thumbs.db
 # Output files (optional - remove this if you want reports committed)
 *.html
 *.pdf
+
+# Internal assets
+internal/
