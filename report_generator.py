@@ -5,6 +5,7 @@ def generate_report(analysis):
     <!DOCTYPE html>
     <html>
     <head>
+        <meta charset="UTF-8">
         <title>Gap Analysis Results</title>
     </head>
     <body>
@@ -15,5 +16,5 @@ def generate_report(analysis):
     </html>
     '''
 
-    with open(REPORT_OUTPUT, "w") as file:
+    with open(REPORT_OUTPUT, "w", encoding="utf-8") as file:
         file.write(html_content)
