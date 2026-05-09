@@ -39,13 +39,24 @@ def get_content():
     - Rank the top 10 gaps by how frequently the topic appears in community questions
     - For each gap, provide: the topic, why it's a gap, and 2-3 example questions from the community that support it
 
+    IMPORTANT: Follow the output format below EXACTLY. No markdown, no bold, no headers, no bullet symbols other than a dash. Do not deviate.
+    
     Output format:
-    GAP #1: [Topic]
-    Why it's a gap: [explanation]
-    Supporting questions: [2-3 examples from the community data]
+    GAP #1: [Topic title]
+    Why it's a gap: [Explanation]
+    Supporting questions:
+    - "[Question from community]"
+    - "[Question from community]"
+    - "[Question from community]"
 
-    GAP #2: [Topic]
-    ...and so on up to GAP #10.
+    GAP #2: [Topic title]
+    Why it's a gap: [Explanation]
+    Supporting questions:
+    - "[Question from community]"
+    - "[Question from community]"
+    - "[Question from community]"
+    
+    ...continue this exact pattern for all 10 gaps.
     """
 
     return prompt
@@ -69,7 +80,12 @@ def analyze(client, prompt):
                 contents=prompt
             )
 
-            return response.text
+            result = response.text
+
+            if not result or not result.strip():
+                raise ValueError("Gemini returned an empty or invalid response")
+
+            return result
 
         except Exception as e:
             last_error = e
