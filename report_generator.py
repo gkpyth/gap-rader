@@ -1,8 +1,35 @@
+"""
+report_generator.py
+--------------------
+Parses Gemini's plain-text gap analysis and renders it as a styled HTML report saved to disk.
+
+Pipeline:
+    1. parse_gaps()         - extracts structured data from Gemini's response
+    2. build_gap_cards()    - converts structured data into HTML card elements
+    3. generate_report()    - assembles the full HTML page and writes it to file
+"""
+
 import re
 from config import REPORT_OUTPUT
 
 
 def parse_gaps(text):
+    """
+    Parse Gemini's plain-text response into a list of structured gap dictionaries.
+
+    Splits the response on 'GAP #N:' markers and extracts the title, explanation, and supporting questions for each
+    gap using regex.
+
+    Args:
+        text (str): Raw plain-text response from Gemini.
+
+    Returns:
+        list[dict]: List of gap dictionaries, each containing:
+            - number              (str): Gap number e.g. "1"
+            - title               (str): Gap topic title
+            - why                 (str): Explanation of why it's a gap
+            - questions     (list[str]): 3 supporting community questions
+    """
     gaps = []
     sections = re.split(r'GAP #(\d+):\s*', text)
 
@@ -28,6 +55,17 @@ def parse_gaps(text):
     return gaps
 
 def build_gap_cards(gaps):
+    """
+    Convert a list of gap dictionaries into HTML card elements.
+
+    Each gap becomes a self-contained card with a header, explanation, and a list of supporting community questions.
+
+    Args:
+         gaps (list[dict]): Structured gap data from parse_gaps().
+
+    Returns:
+        str: HTML string containing all gap cards ready for insertion.
+    """
     cards_html = ""
     for gap in gaps:
         questions_html = "".join(f'<li>"{q}"</li>' for q in gap['questions'])
@@ -52,6 +90,15 @@ def build_gap_cards(gaps):
     return cards_html
 
 def generate_report(analysis):
+    """
+    Orchestrate parsing, card building, and HTML report generation.
+
+    Calls parse_gaps() and build_gap_cards() to convert the raw analysis into HTML, then assembles the full page with
+    header, stats bar, and footer, before writing it to the output file defined in config.py.
+
+    Args:
+         analysis (str): Raw plain-text gap analysis from Gemini.
+    """
     gaps = parse_gaps(analysis)
     cards_html = build_gap_cards(gaps)
 
@@ -332,9 +379,6 @@ def generate_report(analysis):
     </body>
     </html>
     """
-
-    print(f"Number of gaps parsed: {len(gaps)}")
-    print(f"Cards HTML length: {len(cards_html)}")
 
     with open(REPORT_OUTPUT, "w", encoding="utf-8") as file:
         file.write(html_content)
