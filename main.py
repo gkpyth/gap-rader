@@ -9,11 +9,11 @@ Orchestrates the full pipeline:
 3. Generate a styled HTML report with the results
 '''
 
-from gap_analyzer import setup_client, get_content, analyze
+from gap_analyzer import setup_client, construct_prompt, analyze
 from report_generator import generate_report
 
 if __name__ == "__main__":
     client = setup_client()
-    prompt = get_content()
+    prompt = construct_prompt()
     analysis = analyze(client, prompt)
     generate_report(analysis)

@@ -24,7 +24,7 @@ load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-def get_content():
+def construct_prompt():
     """
     Collect data from both sources and build the Gemini prompt.
 
