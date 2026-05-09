@@ -1,6 +1,19 @@
+"""
+gap_analyzer.py
+--------------------
+Handles communication with the Gemini API to perform training gap analysis.
+
+Takes community post titles and help center article titles as inputs, constructs a structured prompt, and sends it to
+Gemini for analysis.
+Returns a plain-text gap report in a strict, parser-friendly format.
+
+Requires:
+    GEMINI_API_KEY in .env
+"""
+
 import os
 import time
-from config import *
+from config import GEMINI_MODEL, HTML_FILE_PATHS, HELPCENTER_CATEGORIES
 from google import genai
 from community_scraper import get_post_titles
 from helpcenter_scraper import get_help_articles
@@ -12,6 +25,15 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 def get_content():
+    """
+    Collect data from both sources and build the Gemini prompt.
+
+    Calls get_post_titles() and get_help_articles() to fetch the two datasets, then embeds them into a structured
+    prompt that instructs Gemini to identify and rank training gaps.
+
+    Returns:
+        str: The fully constructed prompt ready to send to Gemini.
+    """
     post_titles = get_post_titles(HTML_FILE_PATHS)
     help_articles = get_help_articles(HELPCENTER_CATEGORIES)
 
@@ -20,10 +42,10 @@ def get_content():
 
     Below are two datasets:
 
-    1. COMMUNITY QUESTIONS: Real questions and struggles posted by Notion users on Reddit.
-    2. HELP CENTER ARTICLES: Titles of all existing articles in Notion's official help center.
+    1. COMMUNITY QUESTIONS: Real questions and struggles posted by software users on a public forum.
+    2. HELP CENTER ARTICLES: Titles of all existing articles in the product's official help center.
 
-    Your job is to identify TRAINING GAPS — topics that Notion users frequently struggle with or ask about, but that are either missing or insufficiently covered in the help center.
+    Your job is to identify TRAINING GAPS — topics that users frequently struggle with or ask about, but that are either missing or insufficiently covered in the help center.
 
     COMMUNITY QUESTIONS:
     {post_titles}
@@ -62,6 +84,17 @@ def get_content():
     return prompt
 
 def setup_client():
+    """
+    Initialize and return an authenticated Gemini API client.
+
+    Reads the API key from the environment. Raises a clear error if the key is missing.
+
+    Returns:
+        genai.Client: Authenticated Gemini client ready to use.
+
+    Raises:
+        EnvironmentError: If GEMINI_API_KEY is not set in the environment.
+    """
     if not GEMINI_API_KEY:
         raise EnvironmentError(
             "GEMINI_API_KEY not found. Add it to your .env file."
@@ -69,10 +102,27 @@ def setup_client():
     return genai.Client(api_key=GEMINI_API_KEY)
 
 def analyze(client, prompt):
+    """
+    Send the prompt to Gemini and return the gap analysis as plain text.
+
+    Retries up to 3 times on failure with a short delay between attempts.
+    Raises an error if Gemini returns an empty response or all retries fail.
+
+    Args:
+         client (genai.Client): Authenticated Gemini client.
+         prompt (str): The fully constructed analysis prompt.
+
+    Returns:
+        str: Plain-text gap analysis in the structured format defined in the prompt.
+
+    Raises:
+        ValueError: If Gemini returns an empty or invalid response.
+        Exception: Re-raises the last exception if all retries are exhausted.
+    """
     MAX_RETRIES = 3
     RETRY_DELAY = 3
-
     last_error = None
+
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             response = client.models.generate_content(
