@@ -1,9 +1,21 @@
-# Local HTML files
+"""
+config.py
+----------
+Central configuration for Gap Radar.
+
+All settings are defined here so nothing is hardcoded elsewhere.
+To adapt this tool for a different product, update the file paths, help center URLs, and report output name in this
+file only.
+"""
+
+# Locally saved HTML files containing community forum posts.
+# Add additional file paths here if needed
 HTML_FILE_PATHS = [
     "internal/notion.html",
 ]
 
-# Notion help center
+# Help center category URLs to scrape article titles from.
+# Each URL corresponds to one documentation category.
 HELPCENTER_CATEGORIES = [
     "https://www.notion.com/help/category/new-to-notion",
     "https://www.notion.com/help/category/sidebar-navigation",
@@ -31,9 +43,9 @@ HELPCENTER_CATEGORIES = [
     "https://www.notion.com/help/category/troubleshooting"
 ]
 
-# Gemini settings
+# Gemini model to use for gap analysis.
+# Free tier recommended: gemini-2.5-flash-lite (highest daily limit)
 GEMINI_MODEL = "gemini-2.5-flash-lite"
-MAX_TOKENS = 1000
 
-# Report settings
+# Output file name for the generated HTML report.
 REPORT_OUTPUT = "gap_report.html"
